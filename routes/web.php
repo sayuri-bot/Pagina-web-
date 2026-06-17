@@ -50,6 +50,10 @@ Route::bind('product', fn($v)=>Product::findOrFail($v));
 Route::post('/wishlist/toggle', [WishlistController::class, 'toggle'])
     ->name('wishlist.toggle');
     
+Route::get('/wishlist', [WishlistController::class, 'index'])
+    ->middleware(['auth', 'verified'])
+    ->name('wishlist.index');
+    
 Route::get('/chatbot', function () {
     return view('chatbot');
 });
