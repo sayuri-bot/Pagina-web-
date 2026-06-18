@@ -7,6 +7,7 @@ use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rules\Password;
+use Illuminate\Auth\Events\Registered;
 
 class Register extends Component
 {
@@ -60,8 +61,9 @@ public function register()
 
     \Illuminate\Support\Facades\Auth::login($user, remember: true);
 
+    event(new Registered($user));
     // Livewire soporta redirecciones retornando Redirector propio
-    return redirect()->intended('/');
+    return redirect()->route('verification.notice');
 }
 
 
