@@ -35,7 +35,7 @@ class RegisterController extends Controller
         ]);
 
         // Dispara el correo de verificación
-        event(new Registered($user));
+        $user->sendEmailVerificationNotification();
 
         // Inicia sesión automáticamente
         Auth::login($user);
