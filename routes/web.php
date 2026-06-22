@@ -68,7 +68,7 @@ Route::get('/', [HomeController::class,'index'])->name('home');
 
 Route::get('/test-mail', function () {
     Mail::raw('Prueba Brevo OK', function ($message) {
-        $message->to('contacto@gmail.com')
+        $message->to('contacto@pro-cafes.com')
                 ->subject('Test Brevo');
     });
 
