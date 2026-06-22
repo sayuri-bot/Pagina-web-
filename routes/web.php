@@ -33,6 +33,7 @@ use App\Http\Controllers\Admin\OrderController;
 // Mercado Pago
 use App\Http\Controllers\Payment\MercadoPagoController;
 use App\Http\Controllers\Payment\MercadoPagoWebhookController;
+use Illuminate\Support\Facades\Mail;
 
 use App\Models\Brand;
 use App\Models\Category;
@@ -64,6 +65,15 @@ Route::post('/chatbot/send', [
 ]);
 
 Route::get('/', [HomeController::class,'index'])->name('home');
+
+Route::get('/test-mail', function () {
+    Mail::raw('Prueba Brevo OK', function ($message) {
+        $message->to('contacto@gmail.com')
+                ->subject('Test Brevo');
+    });
+
+    return 'Correo enviado';
+});
 
 Route::view('/nosotros','nosotros')->name('nosotros');
 Route::view('/ubicanos','ubicanos')->name('ubicanos');
