@@ -16,6 +16,11 @@ use App\Http\Controllers\Auth\GoogleController;
 use App\Http\Controllers\Customer\DashboardController as CustomerDashboardController;
 use App\Http\Controllers\Customer\BoletaController as CustomerBoletaController;
 
+//Recuperación de contraseña
+use App\Http\Controllers\Auth\ForgotPasswordController;
+use App\Http\Controllers\Auth\ResetPasswordController;
+
+
 // Checkout
 use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\PaymentDemoController;
@@ -306,39 +311,42 @@ Route::prefix('reports')->name('reports.')->group(function () {
 
 /*
 |--------------------------------------------------------------------------
-| MERCADO PAGO
+| MERCADO PAGO (Checkout Pro / Preferencias / Back URLs / Webhook)
 |--------------------------------------------------------------------------
 */
 
-Route::get(
-    '/pagos/checkout',
-    [MercadoPagoController::class,'checkout']
-)->name('mp.checkout');
+// Página de checkout con el botón
+Route::get('/pagos/checkout', [MercadoPagoController::class, 'checkout'])->name('mp.checkout');
 
-Route::post(
-    '/pagos/crear-preferencia',
-    [MercadoPagoController::class,'createPreference']
-)->name('mp.preference');
+// Crear preferencia (POST)
+Route::post('/pagos/crear-preferencia', [MercadoPagoController::class, 'createPreference'])->name('mp.preference');
 
-Route::get(
-    '/pagos/exito',
-    [MercadoPagoController::class,'success']
-)->name('mp.success');
+// Retornos (back_urls)
+Route::get('/pagos/exito',     [MercadoPagoController::class, 'success'])->name('mp.success');
+Route::get('/pagos/pendiente', [MercadoPagoController::class, 'pending'])->name('mp.pending');
+Route::get('/pagos/error',     [MercadoPagoController::class, 'failure'])->name('mp.failure');
 
-Route::get(
-    '/pagos/pendiente',
-    [MercadoPagoController::class,'pending']
-)->name('mp.pending');
+// Webhook (notifications) — público
+// Si usas CSRF, recuerda excluir esta ruta en VerifyCsrfToken::$except.
+Route::post('/webhooks/mercadopago', [MercadoPagoWebhookController::class, 'handle'])->name('mp.webhook');
 
-Route::get(
-    '/pagos/error',
-    [MercadoPagoController::class,'failure']
-)->name('mp.failure');
 
-Route::post(
-    '/webhooks/mercadopago',
-    [MercadoPagoWebhookController::class,'handle']
-)->name('mp.webhook');
+//  RECUPERACIÓN DE CONTRASEÑA
 
+Route::middleware('guest')->group(function () {
+
+    Route::get('/forgot-password', [ForgotPasswordController::class, 'create'])
+        ->name('password.request');
+
+    Route::post('/forgot-password', [ForgotPasswordController::class, 'store'])
+        ->name('password.email');
+
+    Route::get('/reset-password/{token}', [ResetPasswordController::class, 'create'])
+        ->name('password.reset');
+
+    Route::post('/reset-password', [ResetPasswordController::class, 'store'])
+        ->name('password.update');
+
+});
 
 require __DIR__.'/auth.php';
