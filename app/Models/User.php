@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use App\Notifications\WelcomeVerifyEmail;
+use App\Notifications\ResetPasswordCustom;
 
 class User extends Authenticatable implements MustVerifyEmail
 {
@@ -48,6 +49,11 @@ class User extends Authenticatable implements MustVerifyEmail
         $this->notify(new WelcomeVerifyEmail());
     }
 
+    public function sendPasswordResetNotification($token)
+    {
+        $this->notify(new ResetPasswordCustom($token));
+    }
+
     /* ================= Relaciones ================= */
 
     public function shippingAddresses()
@@ -74,6 +80,7 @@ class User extends Authenticatable implements MustVerifyEmail
     {
         return $this->hasMany(Review::class, 'user_id');
     }
+
 
     /* ================= Helpers ================= */
 
