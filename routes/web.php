@@ -209,55 +209,100 @@ Route::middleware('auth')->group(function(){
 
 /*
 |--------------------------------------------------------------------------
-| CLIENTE (SOLO SI ESTÁ VERIFICADO)
+| RUTAS AUTENTICADAS (CLIENTE)
 |--------------------------------------------------------------------------
 */
+Route::middleware('auth')->group(function () {
+    Route::get('/cliente', [CustomerDashboardController::class, 'index'])
+        ->name('customer.dashboard');
 
-Route::middleware([
-    'auth',
-    'verified'
-])->group(function(){
+    Route::post('/cliente/foto', [CustomerDashboardController::class, 'updatePhoto'])
+        ->name('customer.photo.update');
 
-    Route::get(
-        '/cliente',
-        [CustomerDashboardController::class,'index']
-    )->name('customer.dashboard');
+    // ✅ BOLETA (CLIENTE)
+    Route::get('/cliente/pedidos/{order}/boleta', [CustomerBoletaController::class, 'download'])
+        ->name('customer.boleta.download');
 
-    Route::post(
-        '/cliente/foto',
-        [CustomerDashboardController::class,'updatePhoto']
-    )->name('customer.photo.update');
+    Route::view('/profile', 'profile')->name('profile');
+    Route::view('/mis-productos', 'products')->name('customer.products');
 
-    Route::get(
-        '/cliente/pedidos/{order}/boleta',
-        [CustomerBoletaController::class,'download']
-    )->name('customer.boleta.download');
+    Route::get('/wishlist', [WishlistController::class, 'index'])->name('wishlist.index');
+    Route::post('/wishlist/add/{product}',      [WishlistController::class, 'store'])->name('wishlist.add');
+    Route::delete('/wishlist/remove/{product}', [WishlistController::class, 'destroy'])->name('wishlist.remove');
+    Route::post('/wishlist/toggle',             [WishlistController::class, 'toggle'])->name('wishlist.toggle');
 
-    Route::view(
-        '/profile',
-        'profile'
-    )->name('profile');
+    Route::get('/checkout',  [CheckoutController::class, 'index'])->name('checkout');
+    Route::post('/checkout', [CheckoutController::class, 'process'])->name('checkout.process');
 
-    Route::view(
-        '/mis-productos',
-        'products'
-    )->name('customer.products');
-
+    Route::get('/payments/redirect', [PaymentDemoController::class, 'redirect'])->name('payments.redirect');
+    Route::get('/payments/response', [PaymentDemoController::class, 'response'])->name('payments.response');
 });
 
 /*
-|-------------------------------------------------------------------------- 
-| ADMIN
-|-------------------------------------------------------------------------- 
+|--------------------------------------------------------------------------
+| ÁREA ADMIN
+|--------------------------------------------------------------------------
 */
+Route::middleware(['auth','admin'])->prefix('admin')->name('admin.')->group(function () {
 
-Route::middleware(['auth'])->group(function(){
+    // Dashboard
+    Route::get('/dashboard', [AdminDashboardController::class, 'index'])->name('dashboard');
 
-    Route::get('/admin', [AdminDashboardController::class, 'index'])
-        ->name('admin.dashboard');
+    // CRUDs
+    Route::resource('categories', AdminCategoryController::class)->except(['show']);
+    Route::resource('brands',     AdminBrandController::class)->except(['show']);
+    Route::resource('products',   AdminProductController::class)->except(['show']);
+    Route::resource('users',      AdminUserController::class)->except(['show']);
 
+// Reportes Excel + JSON
+Route::prefix('reports')->name('reports.')->group(function () {
+
+    // gráfico dashboard
+    Route::get(
+        '/revenue.json',
+        [ReportController::class, 'revenueJson']
+    )->name('revenue.json');
+
+    // ventas por fechas
+    Route::get(
+        '/sales-by-date',
+        [ReportController::class, 'salesByDate']
+    )->name('sales-by-date');
+
+    // productos más vendidos
+    Route::get(
+        '/best',
+        [ReportController::class, 'bestSellersExcel']
+    )->name('best');
+
+    // productos menos vendidos
+    Route::get(
+        '/least',
+        [ReportController::class, 'leastSellers']
+    )->name('least');
+
+    // inventario crítico
+    Route::get(
+        '/inventory',
+        [ReportController::class, 'criticalInventory']
+    )->name('inventory');
+
+    // ventas por categoría
+    Route::get(
+        '/category',
+        [ReportController::class, 'salesByCategory']
+    )->name('category');
 });
 
+    // Billing (Boletas / Facturas)
+    Route::get('/billing',         [BillingController::class, 'index'])->name('billing.index');
+    Route::post('/billing/lookup', [BillingController::class, 'lookup'])->name('billing.lookup');
+    Route::post('/billing/pdf',    [BillingController::class, 'pdf'])->name('billing.pdf');
+
+    // Órdenes
+    Route::resource('orders', OrderController::class)->only(['index','show'])->names('orders');
+    Route::patch('/orders/{order}/status', [OrderController::class, 'updateStatus'])->name('orders.status');
+});
 
 /*
 |--------------------------------------------------------------------------
