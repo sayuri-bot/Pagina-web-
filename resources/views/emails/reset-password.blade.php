@@ -2,6 +2,10 @@
 
 <p>Solicitaste restablecer tu contraseña.</p>
 
-<a href="{{ $url }}">Cambiar contraseña</a>
+<p>
+    <a href="{{ $url }}">
+        Cambiar contraseña
+    </a>
+</p>
 
-<p>Si no fuiste tú, ignora este mensaje.</p>
+<p>Si no solicitaste esto, ignora este mensaje.</p>
