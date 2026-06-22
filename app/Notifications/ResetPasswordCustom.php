@@ -26,11 +26,10 @@ class ResetPasswordCustom extends Notification
     {
         $url = url('/reset-password/'.$this->token.'?email='.$notifiable->email);
 
-        return (new MailMessage)
-            ->subject('Recuperar contraseña - PROCAFES')
-            ->view('emails.reset-password', [
-                'url' => $url,
-                'user' => $notifiable
-            ]);
-    }
+    return (new MailMessage)
+        ->subject('Recuperar contraseña - PROCAFES')
+        ->line('Haz clic en el botón para cambiar tu contraseña')
+        ->action('Restablecer contraseña', $url)
+        ->line('Si no solicitaste esto, ignora este mensaje.');
+        }
 }
