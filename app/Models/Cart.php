@@ -11,7 +11,13 @@ class Cart extends Model
     public $incrementing = true;
     protected $keyType = 'int';
 
-    protected $fillable = ['user_id','products_id','quantity','price','sub_total'];
+    protected $fillable = [
+        'user_id',
+        'product_id', // 
+        'quantity',
+        'price',
+        'sub_total'
+    ];
 
     protected $casts = [
         'price' => 'decimal:2',

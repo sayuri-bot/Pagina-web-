@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Models\Cart;
+use Illuminate\Support\Facades\Auth;
 
 class CartController extends Controller
 {
@@ -89,8 +91,16 @@ class CartController extends Controller
     /** GET /cart */
     public function index()
     {
-        $cart = $this->putCart($this->getCart());
-        return response()->json($cart);
+        if (Auth::check()) {
+
+            $items = Cart::with('product')
+                ->where('user_id', Auth::id())
+                ->get();
+
+            return view('cart.index', compact('items'));
+        }
+
+        return view('cart.index', ['items' => []]);
     }
 
     /**
@@ -161,6 +171,23 @@ class CartController extends Controller
         }
 
         $cart = $this->putCart($cart);
+
+        // 🔥 GUARDAR EN BASE DE DATOS
+        if (Auth::check()) {
+
+            Cart::updateOrCreate(
+                [
+                    'user_id' => Auth::id(),
+                    'products_id' => $data['id'], // 👈 TU BD USA products_id
+                ],
+                [
+                    'quantity' => $cart['items'][$rowId]['qty'],
+                    'price' => $data['price'],
+                    'sub_total' => $data['price'] * $cart['items'][$rowId]['qty'],
+                ]
+            );
+        }
+
         return response()->json($cart);
     }
 
