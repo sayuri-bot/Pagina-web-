@@ -19,24 +19,21 @@ class ResetPasswordController extends Controller
     }
 
     public function store(Request $request)
-    {
-        $request->validate([
-            'token' => 'required',
-            'email' => 'required|email',
-            'password' => 'required|min:8|confirmed',
-        ]);
+{
+    $request->validate([
+        'token' => 'required',
+        'email' => 'required|email',
+        'password' => 'required|min:6|confirmed',
+    ]);
 
-        $status = Password::reset(
-            $request->only('email', 'password', 'password_confirmation', 'token'),
-            function (User $user, string $password) {
-                $user->forceFill([
-                    'password' => Hash::make($password)
-                ])->save();
-            }
-        );
+    $status = Password::reset(
+        $request->only('email', 'password', 'password_confirmation', 'token'),
+        function ($user, $password) {
+            $user->password = Hash::make($password);
+            $user->save();
+        }
+    );
 
-        return $status === Password::PASSWORD_RESET
-            ? redirect()->route('login')->with('status', 'Contraseña actualizada ✅')
-            : back()->withErrors(['email' => [__($status)]]);
-    }
+    return redirect()->route('login')->with('success', 'Contraseña actualizada');
+}
 }
