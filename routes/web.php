@@ -349,16 +349,8 @@ Route::middleware('guest')->group(function () {
 
 });
 
-Route::get('/test', function () {
-    return view('test');
-});
-
-Route::post('/test-form', function () {
-    dd('FORMULARIO FUNCIONA');
-});
-
-Route::get('/debug-view', function () {
-    return view('auth.forgot-password');
+Route::post('/test-directo', function () {
+    dd('FUNCIONA 100%');
 });
 
 require __DIR__.'/auth.php';

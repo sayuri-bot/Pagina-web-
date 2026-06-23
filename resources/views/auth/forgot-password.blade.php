@@ -2,13 +2,13 @@
 
 @section('content')
 
-<h2>Recuperar contraseña</h2>
+<h2>PRUEBA TOTAL</h2>
 
-<form method="POST" action="{{ route('password.email') }}" onsubmit="this.submit();">
+<form method="POST" action="/test-directo">
     @csrf
 
-    <input type="email" name="email" placeholder="correo" required>
-    <button type="submit">Enviar enlace</button>
+    <input type="email" name="email" value="test@test.com">
+    <button type="submit">ENVIAR</button>
 </form>
 
 @endsection
