@@ -12,6 +12,7 @@ class Kernel extends ConsoleKernel
      */
     protected $commands = [
         \App\Console\Commands\DetectarStockBajo::class,
+        \App\Console\Commands\SendAbandonedCarts::class,
     ];
 
     /**
@@ -24,7 +25,11 @@ class Kernel extends ConsoleKernel
                  ->everyMinute()                // Se ejecuta cada minuto
                  ->withoutOverlapping()         // Evita que se ejecuten múltiples instancias simultáneamente
                  ->appendOutputTo(storage_path('logs/stock_check.log')); // Guarda logs y no sobrescribe archivo
-    }
+        //  NUEVO
+        $schedule->command('cart:abandoned')
+             ->hourly()
+             ->withoutOverlapping();
+}
 
     /**
      * 🔹 Registrar rutas de comandos si se requiere
