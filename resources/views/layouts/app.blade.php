@@ -140,65 +140,146 @@
   });
   </script>
 
-    <!-- 🔰 BOTÓN FLOTANTE DE WHATSAPP -->
-<a href="https://wa.me/+51955236237?text=Hola%20PROCAFES,%20quisiera%20hacer%20un%20pedido%20o%20tengo%20una%20consulta."
-   target="_blank"
-   class="whatsapp-float"
-   aria-label="Chatea con nosotros por WhatsApp">
-  <img src="{{ asset('images/whatsapp.png') }}" alt="WhatsApp" loading="lazy">
-</a>
+<!-- ================= CHATBOT PROCAFES ================= -->
 
+<!-- 🔘 BOTÓN -->
+<div id="chatbot-btn">☕</div>
+
+<!-- 💬 CHAT -->
+<div id="chatbot-box">
+    <div id="chat-header">PROCAFES ☕</div>
+
+    <div id="chat-messages">
+        <div class="bot">👋 Hola ¿En qué podemos ayudarte?</div>
+    </div>
+
+    <div id="chat-input">
+        <input type="text" id="msg" placeholder="Escribe tu mensaje...">
+        <button onclick="send()">Enviar</button>
+    </div>
+</div>
+
+<!-- 🎨 ESTILOS -->
 <style>
-/* ====== BOTÓN FLOTANTE WHATSAPP ====== */
-.whatsapp-float {
+#chatbot-btn {
   position: fixed;
-  width: 75px; /* 🔹 Más grande */
+  width: 75px;
   height: 75px;
   bottom: 25px;
   right: 25px;
-  background-color: #25D366;
+  background: linear-gradient(135deg, #6f4e37, #3e2723);
   border-radius: 50%;
   box-shadow: 0 3px 15px rgba(0,0,0,0.25);
   z-index: 1000;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: transform .25s ease-in-out, box-shadow .25s;
+  font-size: 32px;
+  color: white;
+  cursor: pointer;
+  transition: 0.3s;
 }
-.whatsapp-float:hover {
+
+#chatbot-btn:hover {
   transform: scale(1.08);
-  box-shadow: 0 5px 18px rgba(0,0,0,0.35);
 }
 
-/* Imagen dentro del círculo */
-.whatsapp-float img {
-  width: 48px; /* 🔹 Tamaño del ícono */
-  height: 48px;
-  object-fit: contain;
-  border-radius: 50%;
+#chatbot-box {
+  position: fixed;
+  bottom: 110px;
+  right: 25px;
+  width: 320px;
+  height: 420px;
+  background: white;
+  display: none;
+  flex-direction: column;
+  border-radius: 12px;
+  box-shadow: 0 0 15px rgba(0,0,0,0.2);
+  z-index: 1000;
 }
 
-/* 🔸 Versión móvil */
-@media (max-width:768px){
-  .whatsapp-float {
-    width: 65px;
-    height: 65px;
-    bottom: 20px;
-    right: 20px;
-  }
-  .whatsapp-float img {
-    width: 42px;
-    height: 42px;
-  }
+#chat-header {
+  background: #6f4e37;
+  color: white;
+  padding: 12px;
+  border-radius: 12px 12px 0 0;
+  font-weight: bold;
+}
+
+#chat-messages {
+  flex: 1;
+  padding: 10px;
+  overflow-y: auto;
+  font-size: 14px;
+}
+
+.bot {
+  margin: 5px 0;
+}
+
+.user {
+  text-align: right;
+  margin: 5px 0;
+}
+
+#chat-input {
+  display: flex;
+  border-top: 1px solid #ddd;
+}
+
+#chat-input input {
+  flex: 1;
+  border: none;
+  padding: 10px;
+  outline: none;
+}
+
+#chat-input button {
+  background: #6f4e37;
+  color: white;
+  border: none;
+  padding: 10px 15px;
+  cursor: pointer;
 }
 </style>
-<!-- 🔰 FIN BOTÓN WHATSAPP -->
->
 
+<!-- ⚡ SCRIPT -->
+<script>
+// abrir / cerrar chatbot
+document.getElementById('chatbot-btn').onclick = function () {
+    let box = document.getElementById('chatbot-box');
+    box.style.display = box.style.display === 'flex' ? 'none' : 'flex';
+};
 
+// enviar mensaje
+function send() {
+    let input = document.getElementById('msg');
+    let msg = input.value.trim();
 
-  <div id="toastContainer" class="position-fixed bottom-0 end-0 p-3" style="z-index:1080;"></div>
+    if (!msg) return;
 
-  @stack('scripts')
-</body>
-</html>
+    let chat = document.getElementById('chat-messages');
+
+    // mostrar mensaje usuario
+    chat.innerHTML += `<div class="user">🧑 ${msg}</div>`;
+
+    // enviar a Laravel
+    fetch('/chatbot', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': '{{ csrf_token() }}'
+        },
+        body: JSON.stringify({message: msg})
+    })
+    .then(res => res.json())
+    .then(data => {
+        chat.innerHTML += `<div class="bot">🤖 ${data.reply}</div>`;
+        chat.scrollTop = chat.scrollHeight;
+    });
+
+    input.value = "";
+}
+</script>
+
+<!-- ================= FIN CHATBOT ================= -->

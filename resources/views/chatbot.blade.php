@@ -19,6 +19,8 @@ function sendMessage() {
 
     let message = document.getElementById('message').value;
 
+    if (!message) return;
+
     fetch('/chatbot/send', {
         method: 'POST',
         headers: {
@@ -29,21 +31,22 @@ function sendMessage() {
             message: message
         })
     })
-   .then(response => response.json())
-.then(data => {
+    .then(response => response.json())
+    .then(data => {
 
-    console.log("RESPUESTA:", data);
+        let chat = document.getElementById('chat');
 
-    let chat = document.getElementById('chat');
+        // 👤 mensaje usuario
+        chat.innerHTML += `<p><b>Tú:</b> ${message}</p>`;
 
-    chat.innerHTML += `
-        <p><b>Tú:</b> ${message}</p>
-        <p><b>Bot:</b> ${JSON.stringify(data)}</p>
-    `;
+        // 🤖 respuesta correcta
+        chat.innerHTML += `<p><b>Bot:</b> ${data.reply}</p>`;
 
-    document.getElementById('message').value='';
-});
+        // scroll abajo
+        chat.scrollTop = chat.scrollHeight;
 
+        document.getElementById('message').value='';
+    });
 }
 </script>
 

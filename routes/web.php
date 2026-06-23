@@ -60,9 +60,7 @@ Route::get('/wishlist', [WishlistController::class, 'index'])
     ->middleware(['auth', 'verified'])
     ->name('wishlist.index');
     
-Route::get('/chatbot', function () {
-    return view('chatbot');
-});
+Route::post('/chatbot', [ChatbotController::class, 'chat']);
 
 Route::post('/chatbot/send', [
     ChatbotController::class,
