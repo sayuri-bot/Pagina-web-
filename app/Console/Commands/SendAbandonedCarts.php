@@ -15,7 +15,7 @@ class SendAbandonedCarts extends Command
 
     public function handle()
     {
-        $hours = 6; // 🔥 puedes cambiar a 24 horas
+        $hours = 0; // 🔥 puedes cambiar a 24 horas
 
         $users = User::whereHas('cartItems', function ($q) use ($hours) {
             $q->where('updated_at', '<', now()->subHours($hours));
