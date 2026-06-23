@@ -332,22 +332,17 @@ Route::post('/webhooks/mercadopago', [MercadoPagoWebhookController::class, 'hand
 
 
 //  RECUPERACIÓN DE CONTRASEÑA
-
-Route::middleware('guest')->group(function () {
-
-    Route::get('/forgot-password', [ForgotPasswordController::class, 'create'])
+Route::get('/forgot-password', [ForgotPasswordController::class, 'create'])
         ->name('password.request');
 
-    Route::post('/forgot-password', [ForgotPasswordController::class, 'store'])
+Route::post('/forgot-password', [ForgotPasswordController::class, 'store'])
         ->name('password.email');
 
-    Route::get('/reset-password/{token}', [ResetPasswordController::class, 'create'])
+Route::get('/reset-password/{token}', [ResetPasswordController::class, 'create'])
         ->name('password.reset');
 
-    Route::post('/reset-password', [ResetPasswordController::class, 'store'])
+Route::post('/reset-password', [ResetPasswordController::class, 'store'])
         ->name('password.update');
-
-});
 
 Route::get('/test', function () {
     return view('test');

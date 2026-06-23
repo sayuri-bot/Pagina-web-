@@ -7,7 +7,7 @@
 <form method="POST" action="{{ route('password.email') }}">
     @csrf
 
-    <input type="email" name="email" placeholder="correo" required>
+    <input type="email" name="email" required>
     <button type="submit">Enviar enlace</button>
 </form>
 
