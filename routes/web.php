@@ -88,6 +88,23 @@ Route::view('/ubicanos','ubicanos')->name('ubicanos');
 | CARRITO
 |--------------------------------------------------------------------------
 */
+Route::get('/cart-db', function () {
+    if (!Auth::check()) {
+        return response()->json([
+            'items' => [],
+            'count' => 0,
+            'total' => 0
+        ]);
+    }
+
+    $items = \App\Models\Cart::where('user_id', Auth::id())->get();
+
+    return response()->json([
+        'items' => $items,
+        'count' => $items->sum('quantity'),
+        'total' => $items->sum(fn($i) => $i->price * $i->quantity),
+    ]);
+});
 
 Route::prefix('cart')->name('cart.')->group(function(){
 

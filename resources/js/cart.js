@@ -91,7 +91,34 @@ window.addEventListener('DOMContentLoaded', () => {
   }
 
   // init
-  if (ROUTES.index) api(ROUTES.index).then(render).catch(console.error);
+  if (APP.isAuth) {
+  fetch('/cart-db')
+    .then(res => res.json())
+    .then(cart => {
+      // 🔥 convertir formato BD → formato sesión
+      const formatted = {
+        items: {},
+        count: cart.count,
+        total: cart.total
+      };
+
+      cart.items.forEach(item => {
+        const rowId = 'db_' + item.id;
+
+        formatted.items[rowId] = {
+          rowId,
+          id: item.product_id,
+          name: item.product?.name || 'Producto',
+          price: parseFloat(item.price),
+          qty: item.quantity,
+          image: item.product?.image || null,
+          url: '/product/' + item.product_id
+        };
+      });
+
+      render(formatted);
+    });
+}
 
   // ---- ADD ----
   document.addEventListener('click', async (e)=>{

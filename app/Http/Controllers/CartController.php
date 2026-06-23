@@ -111,6 +111,33 @@ class CartController extends Controller
         ]);
     }
 
+    public function getCartDB()
+    {
+        if (!Auth::check()) {
+            return response()->json([
+                'items' => [],
+                'count' => 0,
+                'total' => 0
+            ]);
+        }
+
+        $items = Cart::with('product')
+            ->where('user_id', Auth::id())
+            ->get();
+
+        $count = $items->sum('quantity');
+
+        $total = $items->sum(function ($item) {
+            return $item->price * $item->quantity;
+        });
+
+        return response()->json([
+            'items' => $items,
+            'count' => $count,
+            'total' => $total
+        ]);
+    }
+
     /**
      * POST /cart/add
      * Body JSON:
@@ -186,7 +213,7 @@ class CartController extends Controller
             Cart::updateOrCreate(
                 [
                     'user_id' => Auth::id(),
-                    'products_id' => $data['id'], // 👈 TU BD USA products_id
+                    'product_id' => $data['id'], // 👈 TU BD USA products_id
                 ],
                 [
                     'quantity' => $cart['items'][$rowId]['qty'],
