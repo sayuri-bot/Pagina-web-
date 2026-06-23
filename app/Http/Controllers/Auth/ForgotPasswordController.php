@@ -19,7 +19,7 @@ class ForgotPasswordController extends Controller
 
     public function store(Request $request)
     {
-        dd('ENTRE AQUI');
+        dd('ENTRE AL CONTROLLER');
     }
 
 }
