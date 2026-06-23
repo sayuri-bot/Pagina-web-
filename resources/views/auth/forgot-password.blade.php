@@ -1,6 +1,7 @@
 @extends('layouts.app')
 
 @section('content')
+{{ dd('BLADE FUNCIONA') }}
 
 <h2>Recuperar contraseña</h2>
 

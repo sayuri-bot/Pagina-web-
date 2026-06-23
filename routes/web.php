@@ -357,4 +357,8 @@ Route::post('/test-form', function () {
     dd('FORMULARIO FUNCIONA');
 });
 
+Route::get('/debug-view', function () {
+    return view('auth.forgot-password');
+});
+
 require __DIR__.'/auth.php';
