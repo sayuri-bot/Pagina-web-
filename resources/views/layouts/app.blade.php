@@ -97,90 +97,49 @@
   <script src="{{ asset('js/cart.js') }}"></script>
 
   <script>
-/** Wishlist Toggle (AJAX) + contador en header */
-document.addEventListener('DOMContentLoaded', () => {
-  const csrf = document.querySelector('meta[name="csrf-token"]')?.content || '';
-  const wlCountEl = document.getElementById('wishlistCount');
-  const toggleUrl = "{{ route('wishlist.toggle') }}";
-
-  function setCount(n) {
-    if (wlCountEl) wlCountEl.textContent = n;
-  }
-
-  function updateButton(btn, added) {
-    const txt = btn.querySelector('.js-wl-text');
-    const icon = btn.querySelector('i');
-    if (added) {
-      btn.classList.remove('btn-outline-danger');
-      btn.classList.add('btn-danger','active');
-      if (icon) icon.className = 'bi bi-heart-fill me-1';
-      if (txt) txt.textContent = 'En favoritos';
-    } else {
-      btn.classList.add('btn-outline-danger');
-      btn.classList.remove('btn-danger','active');
-      if (icon) icon.className = 'bi bi-heart me-1';
-      if (txt) txt.textContent = 'Añadir a favoritos';
-    }
-  }
-
-  async function toggleWishlist(productId) {
-    const res = await fetch(toggleUrl, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': csrf, 'Accept': 'application/json' },
-      body: JSON.stringify({ product_id: productId })
-    });
-    if (!res.ok) throw new Error('Toggle error');
-    return await res.json();
-  }
-  // Intercepta formularios .js-wishlist-toggle (home + wishlist)
   document.addEventListener('DOMContentLoaded', () => {
-
-  document.body.addEventListener('submit', async (ev) => {
-
-    const form = ev.target;
-
-    // 🔥 SOLO interceptar wishlist
-    if (!form.classList.contains('js-wishlist-toggle')) {
-        return; // 👈 deja que Laravel maneje los demás forms
-    }
-
-    ev.preventDefault();
 
     const csrf = document.querySelector('meta[name="csrf-token"]').content;
 
-    const productId = form.getAttribute('data-product');
-    const btn = form.querySelector('button');
+    document.querySelectorAll('.js-wishlist-toggle').forEach(form => {
 
-    btn?.setAttribute('disabled','disabled');
+      form.addEventListener('submit', async (ev) => {
+        ev.preventDefault();
 
-    try {
-        const res = await fetch("{{ route('wishlist.toggle') }}", {
+        const productId = form.getAttribute('data-product');
+        const btn = form.querySelector('button');
+
+        btn?.setAttribute('disabled','disabled');
+
+        try {
+          const res = await fetch("{{ route('wishlist.toggle') }}", {
             method: 'POST',
             headers: {
-                'Content-Type': 'application/json',
-                'X-CSRF-TOKEN': csrf
+              'Content-Type': 'application/json',
+              'X-CSRF-TOKEN': csrf
             },
             body: JSON.stringify({ product_id: productId })
-        });
+          });
 
-        const data = await res.json();
+          const data = await res.json();
 
-        if (data.count !== undefined) {
+          if (data.count !== undefined) {
             const countEl = document.getElementById('wishlistCount');
             if (countEl) countEl.textContent = data.count;
-        }
+          }
 
-    } catch (e) {
-        console.error(e);
-    } finally {
-        btn?.removeAttribute('disabled');
-    }
+        } catch (e) {
+          console.error(e);
+        } finally {
+          btn?.removeAttribute('disabled');
+        }
+      });
+
+    });
 
   });
+  </script>
 
-});
-});
-</script>
     <!-- 🔰 BOTÓN FLOTANTE DE WHATSAPP -->
 <a href="https://wa.me/+51955236237?text=Hola%20PROCAFES,%20quisiera%20hacer%20un%20pedido%20o%20tengo%20una%20consulta."
    target="_blank"
