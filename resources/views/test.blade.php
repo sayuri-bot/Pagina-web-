@@ -1,15 +1,15 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Test</title>
+    <title>TEST</title>
 </head>
 <body>
 
 <h1>TEST FORM</h1>
 
-<form method="POST" action="/test-form">
+<form method="POST" action="/test-directo">
     @csrf
-    <input type="text" name="email">
+    <input type="email" name="email" value="test@test.com">
     <button type="submit">ENVIAR</button>
 </form>
 

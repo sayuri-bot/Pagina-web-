@@ -349,6 +349,10 @@ Route::middleware('guest')->group(function () {
 
 });
 
+Route::get('/test', function () {
+    return view('test');
+});
+
 Route::post('/test-directo', function () {
     dd('FUNCIONA 100%');
 });
