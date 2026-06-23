@@ -349,4 +349,11 @@ Route::middleware('guest')->group(function () {
 
 });
 
+Route::get('/test-reset', function () {
+    $user = \App\Models\User::first();
+    $user->notify(new \App\Notifications\ResetPasswordCustom('123456'));
+
+    return 'Enviado';
+});
+
 require __DIR__.'/auth.php';
