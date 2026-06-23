@@ -134,6 +134,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   // Intercepta formularios .js-wishlist-toggle (home + wishlist)
+  /*
   document.body.addEventListener('submit', async (ev) => {
     const form = ev.target.closest('.js-wishlist-toggle');
     if (!form) return;
@@ -163,6 +164,7 @@ document.addEventListener('DOMContentLoaded', () => {
       btn?.removeAttribute('disabled');
     }
   });
+  */
 });
 </script>
     <!-- 🔰 BOTÓN FLOTANTE DE WHATSAPP -->
