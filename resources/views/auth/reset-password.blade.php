@@ -1,46 +1,78 @@
-@extends('layouts.app')
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Restablecer contraseña</title>
+</head>
 
-@section('content')
+<body style="margin:0; padding:0; background:#f4f4f4; font-family:Arial, sans-serif;">
 
-<div class="row justify-content-center" style="min-height:70vh;align-items:center;">
-    <div class="col-md-5">
+<table width="100%" cellpadding="0" cellspacing="0">
+<tr>
+<td align="center">
 
-        <div class="card shadow border-0 rounded-4">
-            <div class="card-body p-4">
+<!-- CONTENEDOR -->
+<table width="600" style="background:#ffffff; margin:40px auto; border-radius:10px; overflow:hidden; box-shadow:0 5px 15px rgba(0,0,0,0.1);">
 
-                <h4 class="mb-3">Restablecer contraseña</h4>
+<!-- HEADER -->
+<tr>
+<td style="background:#f2dd6c; padding:20px; text-align:center;">
+    <h1 style="margin:0; color:#3e350e;">☕ PROCAFES</h1>
+</td>
+</tr>
 
-                <form method="POST" action="{{ route('password.update') }}">
-                    @csrf
+<!-- BODY -->
+<tr>
+<td style="padding:30px; color:#333;">
 
-                    <input type="hidden" name="token" value="{{ request()->route('token') }}">
+    <h2 style="margin-top:0;">Hola 👋</h2>
 
-                    <div class="mb-3">
-                        <label>Email</label>
-                        <input type="email" name="email" class="form-control"
-                               value="{{ request('email') }}" required>
-                    </div>
+    <p>
+        Recibimos una solicitud para restablecer tu contraseña.
+    </p>
 
-                    <div class="mb-3">
-                        <label>Nueva contraseña</label>
-                        <input type="password" name="password" class="form-control" required>
-                    </div>
+    <p>
+        Haz clic en el siguiente botón para continuar:
+    </p>
 
-                    <div class="mb-3">
-                        <label>Confirmar contraseña</label>
-                        <input type="password" name="password_confirmation" class="form-control" required>
-                    </div>
-
-                    <button class="btn btn-procafes-dark w-100">
-                        Guardar nueva contraseña
-                    </button>
-
-                </form>
-
-            </div>
-        </div>
-
+    <!-- BOTÓN -->
+    <div style="text-align:center; margin:30px 0;">
+        <a href="{{ $url }}"
+           style="
+           background:#3e350e;
+           color:#ffffff;
+           padding:14px 28px;
+           text-decoration:none;
+           border-radius:6px;
+           font-weight:bold;
+           display:inline-block;">
+           Restablecer contraseña
+        </a>
     </div>
-</div>
 
-@endsection
+    <p style="color:#666;">
+        Este enlace expirará en 60 minutos.
+    </p>
+
+    <p style="color:#666;">
+        Si no solicitaste este cambio, puedes ignorar este mensaje.
+    </p>
+
+</td>
+</tr>
+
+<!-- FOOTER -->
+<tr>
+<td style="background:#f9f9f9; padding:20px; text-align:center; font-size:12px; color:#999;">
+    © {{ date('Y') }} PROCAFES — Todos los derechos reservados
+</td>
+</tr>
+
+</table>
+
+</td>
+</tr>
+</table>
+
+</body>
+</html>
