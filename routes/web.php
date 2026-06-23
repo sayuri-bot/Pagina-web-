@@ -88,6 +88,7 @@ Route::view('/ubicanos','ubicanos')->name('ubicanos');
 | CARRITO
 |--------------------------------------------------------------------------
 */
+Route::get('/cart-json', [CartController::class, 'getCartJson'])->name('cart.json');
 Route::get('/cart-db', function () {
     if (!Auth::check()) {
         return response()->json([

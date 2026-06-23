@@ -111,7 +111,7 @@ class CartController extends Controller
         ]);
     }
 
-    public function getCartDB()
+    public function getCartJson()
     {
         if (!Auth::check()) {
             return response()->json([
@@ -125,14 +125,29 @@ class CartController extends Controller
             ->where('user_id', Auth::id())
             ->get();
 
-        $count = $items->sum('quantity');
+        $cartItems = [];
+        $total = 0;
+        $count = 0;
 
-        $total = $items->sum(function ($item) {
-            return $item->price * $item->quantity;
-        });
+        foreach ($items as $item) {
+            $rowId = 'db_'.$item->product_id;
+
+            $cartItems[$rowId] = [
+                'rowId' => $rowId,
+                'id' => $item->product_id,
+                'name' => $item->product->name ?? 'Producto',
+                'price' => (float)$item->price,
+                'qty' => (int)$item->quantity,
+                'image' => $item->product->image ?? null,
+                'url' => url('/product/'.$item->product_id),
+            ];
+
+            $total += $item->price * $item->quantity;
+            $count += $item->quantity;
+        }
 
         return response()->json([
-            'items' => $items,
+            'items' => $cartItems,
             'count' => $count,
             'total' => $total
         ]);
