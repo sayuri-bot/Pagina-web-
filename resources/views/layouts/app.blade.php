@@ -135,34 +135,47 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Intercepta formularios .js-wishlist-toggle (home + wishlist)
   document.body.addEventListener('submit', async (ev) => {
-    const form = ev.target.closest('.js-wishlist-toggle');
-    if (!form) return;
+    const form = ev.target;
+
+    // ✅ SOLO interceptar wishlist
+    if (!form.classList.contains('js-wishlist-toggle')) {
+        return;
+    }
 
     ev.preventDefault();
-    if (!window.App?.isAuth) { window.location.href = "{{ route('login') }}"; return; }
+
+    if (!window.App?.isAuth) {
+        window.location.href = "{{ route('login') }}";
+        return;
+    }
 
     const productId = form.getAttribute('data-product');
     const btn = form.querySelector('button');
 
     btn?.setAttribute('disabled','disabled');
+
     try {
-      const data = await toggleWishlist(productId);
-      setCount(data.count ?? 0);
+        const res = await fetch("{{ route('wishlist.toggle') }}", {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+            },
+            body: JSON.stringify({ product_id: productId })
+        });
 
-      // Si estoy en el listado (home): solo cambia aspecto del botón
-      updateButton(btn, data.added);
+        const data = await res.json();
 
-      // Si estoy en la página de wishlist y se quitó, remueve la card
-      if (!data.added) {
-        const card = form.closest('.js-wishlist-card');
-        if (card) card.remove();
-      }
+        if (data.count !== undefined) {
+            document.getElementById('wishlistCount').textContent = data.count;
+        }
+
     } catch (e) {
-      console.error(e);
+        console.error(e);
     } finally {
-      btn?.removeAttribute('disabled');
+        btn?.removeAttribute('disabled');
     }
-  });
+});
 });
 </script>
     <!-- 🔰 BOTÓN FLOTANTE DE WHATSAPP -->
