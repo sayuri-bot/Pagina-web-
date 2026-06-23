@@ -97,10 +97,18 @@ class CartController extends Controller
                 ->where('user_id', Auth::id())
                 ->get();
 
-            return view('cart.index', compact('items'));
+            // 🔥 calcular total
+            $total = $items->sum(function($item){
+                return $item->price * $item->quantity;
+            });
+
+            return view('cart.index', compact('items', 'total'));
         }
 
-        return view('cart.index', ['items' => []]);
+        return view('cart.index', [
+            'items' => [],
+            'total' => 0
+        ]);
     }
 
     /**
