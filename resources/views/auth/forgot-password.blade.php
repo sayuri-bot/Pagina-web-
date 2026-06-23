@@ -2,9 +2,6 @@
     @csrf
 
     <input type="email" name="email" placeholder="Tu correo" required>
-    <button type="submit">Enviar enlace</button>
 
-    @if (session('status'))
-        <p>{{ session('status') }}</p>
-    @endif
+    <button type="submit">Enviar enlace</button>
 </form>
