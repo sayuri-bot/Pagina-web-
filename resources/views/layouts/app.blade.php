@@ -132,22 +132,21 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!res.ok) throw new Error('Toggle error');
     return await res.json();
   }
-  /*
   // Intercepta formularios .js-wishlist-toggle (home + wishlist)
+  document.addEventListener('DOMContentLoaded', () => {
+
   document.body.addEventListener('submit', async (ev) => {
+
     const form = ev.target;
 
-    // ✅ SOLO interceptar wishlist
+    // 🔥 SOLO interceptar wishlist
     if (!form.classList.contains('js-wishlist-toggle')) {
-        return;
+        return; // 👈 deja que Laravel maneje los demás forms
     }
 
     ev.preventDefault();
 
-    if (!window.App?.isAuth) {
-        window.location.href = "{{ route('login') }}";
-        return;
-    }
+    const csrf = document.querySelector('meta[name="csrf-token"]').content;
 
     const productId = form.getAttribute('data-product');
     const btn = form.querySelector('button');
@@ -159,7 +158,7 @@ document.addEventListener('DOMContentLoaded', () => {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                'X-CSRF-TOKEN': csrf
             },
             body: JSON.stringify({ product_id: productId })
         });
@@ -167,7 +166,8 @@ document.addEventListener('DOMContentLoaded', () => {
         const data = await res.json();
 
         if (data.count !== undefined) {
-            document.getElementById('wishlistCount').textContent = data.count;
+            const countEl = document.getElementById('wishlistCount');
+            if (countEl) countEl.textContent = data.count;
         }
 
     } catch (e) {
@@ -175,8 +175,10 @@ document.addEventListener('DOMContentLoaded', () => {
     } finally {
         btn?.removeAttribute('disabled');
     }
+
+  });
+
 });
-*/
 });
 </script>
     <!-- 🔰 BOTÓN FLOTANTE DE WHATSAPP -->
