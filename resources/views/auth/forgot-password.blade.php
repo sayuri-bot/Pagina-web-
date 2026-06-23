@@ -1,9 +1,7 @@
-<h2>TEST FORM</h2>
-
 <form method="POST" action="{{ route('password.email') }}">
     @csrf
 
-    <input type="email" name="email" value="test@test.com" required>
+    <input type="email" name="email" placeholder="Tu correo" required>
 
-    <button type="submit">ENVIAR</button>
+    <button type="submit">Enviar enlace</button>
 </form>
