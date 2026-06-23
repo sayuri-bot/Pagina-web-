@@ -24,15 +24,15 @@ class AbandonedCartNotification extends Notification
     }
 
     public function toMail($notifiable)
-    {
-        $url = url('/cart');
+{
+    $url = url('/cart');
 
-        return (new MailMessage)
-            ->subject('Tu carrito te espera ☕ - PROCAFES')
-            ->greeting('Hola '.$notifiable->name)
-            ->line('Notamos que dejaste productos en tu carrito.')
-            ->line('Tienes '.count($this->items).' productos esperando por ti.')
-            ->action('Ver mi carrito', $url)
-            ->line('¡No pierdas tu café favorito!');
-    }
+    return (new MailMessage)
+        ->subject('Tu carrito te espera ☕ - PROCAFES')
+        ->view('emails.abandoned-cart', [
+            'user' => $notifiable,
+            'items' => $this->items,
+            'url' => $url
+        ]);
+}
 }

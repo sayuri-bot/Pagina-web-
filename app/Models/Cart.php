@@ -7,13 +7,13 @@ use Illuminate\Database\Eloquent\Model;
 class Cart extends Model
 {
     protected $table = 'cart';
-    protected $primaryKey = 'Cart_id';
+    protected $primaryKey = 'id'; // 🔥 importante (tu BD usa id)
     public $incrementing = true;
     protected $keyType = 'int';
 
     protected $fillable = [
         'user_id',
-        'product_id', // 
+        'product_id',
         'quantity',
         'price',
         'sub_total'
@@ -25,10 +25,10 @@ class Cart extends Model
     ];
 
     public function user(){
-        return $this->belongsTo(User::class, 'user_id', 'User_id');
+        return $this->belongsTo(User::class, 'user_id');
     }
 
     public function product(){
-        return $this->belongsTo(Product::class, 'products_id', 'products_id');
+        return $this->belongsTo(Product::class, 'product_id'); // 🔥 corregido
     }
 }
