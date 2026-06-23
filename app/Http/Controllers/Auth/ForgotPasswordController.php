@@ -8,6 +8,7 @@ use App\Models\User;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\DB;
 use App\Notifications\ResetPasswordCustom;
+use Illuminate\Support\Facades\Password;
 
 class ForgotPasswordController extends Controller
 {
@@ -15,36 +16,19 @@ class ForgotPasswordController extends Controller
     {
         return view('auth.forgot-password');
     }
-    
+
     public function store(Request $request)
     {
         $request->validate([
             'email' => 'required|email'
         ]);
 
-        $user = User::where('email', $request->email)->first();
-
-        if (!$user) {
-            return back()->withErrors([
-                'email' => 'No existe ese correo'
-            ]);
-        }
-
-        // 🔥 generar token
-        $token = Str::random(60);
-
-        DB::table('password_reset_tokens')->updateOrInsert(
-            ['email' => $user->email],
-            [
-                'email' => $user->email,
-                'token' => bcrypt($token),
-                'created_at' => now()
-            ]
+        $status = Password::sendResetLink(
+            $request->only('email')
         );
 
-        // 🔥 enviar correo
-        $user->notify(new ResetPasswordCustom($token));
-
-        return back()->with('status', 'Correo enviado ✅');
+        return $status === Password::RESET_LINK_SENT
+            ? back()->with('status', 'Correo enviado ✅')
+            : back()->withErrors(['email' => __($status)]);
     }
 }
