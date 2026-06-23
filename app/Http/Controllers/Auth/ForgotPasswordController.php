@@ -18,8 +18,16 @@ class ForgotPasswordController extends Controller
     }
 
     public function store(Request $request)
-    {
-        dd('ENTRE AL CONTROLLER');
-    }
+{
+    $request->validate([
+        'email' => ['required', 'email', 'exists:users,email'],
+    ]);
+
+    $status = Password::sendResetLink(
+        $request->only('email')
+    );
+
+    return back()->with('success', 'Te enviamos un enlace a tu correo para restablecer tu contraseña');
+}
 
 }
