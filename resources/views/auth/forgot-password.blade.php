@@ -4,11 +4,11 @@
 
 <h2>PRUEBA TOTAL</h2>
 
-<form method="POST" action="/test-directo">
+<form method="POST" action="{{ route('password.email') }}">
     @csrf
 
-    <input type="email" name="email" value="test@test.com">
-    <button type="submit">ENVIAR</button>
+    <input type="email" name="email" placeholder="correo" required>
+    <button type="submit">Enviar enlace</button>
 </form>
 
 @endsection
