@@ -14,25 +14,26 @@ class ChatbotController extends Controller
         $mensaje = $request->message;
         $mensajeLower = strtolower($mensaje);
 
-        // 🔥 traer productos
-        $productos = Product::select('id','name','price')->get();
+        $productos = Product::all();
 
-        // 🔹 lista para IA
-        $lista = "";
-        foreach ($productos as $p) {
-            $lista .= "{$p->name} - S/ {$p->price}\n";
+        // ==============================
+        // 🟢 1. SALUDO → IA
+        // ==============================
+        if (
+            str_contains($mensajeLower, 'hola') ||
+            str_contains($mensajeLower, 'buenas')
+        ) {
+            return $this->respuestaIA($mensaje, $productos);
         }
 
         // ==============================
-        // 🟢 1. VER PRODUCTOS
+        // ☕ 2. VER PRODUCTOS
         // ==============================
-        if (str_contains($mensajeLower, 'producto') || str_contains($mensajeLower, 'café')) {
+        if (str_contains($mensajeLower, 'producto')) {
 
-            $topProductos = Product::take(5)->get();
+            $respuesta = "☕ Tenemos estos productos:\n\n";
 
-            $respuesta = "☕ Nuestros productos:\n\n";
-
-            foreach ($topProductos as $p) {
+            foreach ($productos->take(5) as $p) {
                 $respuesta .= "👉 {$p->name} - S/ {$p->price}\n";
             }
 
@@ -40,29 +41,47 @@ class ChatbotController extends Controller
         }
 
         // ==============================
-        // 💰 2. CONSULTAR PRECIO
+        // 3. PRECIO INTELIGENTE (MEJORADO)
         // ==============================
-        if (str_contains($mensajeLower, 'precio')) {
+        if (
+            str_contains($mensajeLower, 'precio') ||
+            str_contains($mensajeLower, 'cuesta')
+        ) {
+
+            $mejorProducto = null;
+            $mejorScore = 0;
 
             foreach ($productos as $p) {
-                if (str_contains($mensajeLower, strtolower($p->name))) {
-                    return response()->json([
-                        'reply' => "💰 {$p->name} cuesta S/ {$p->price}"
-                    ]);
+
+                $nombre = strtolower($p->name);
+
+                similar_text($mensajeLower, $nombre, $porcentaje);
+
+                if ($porcentaje > $mejorScore) {
+                    $mejorScore = $porcentaje;
+                    $mejorProducto = $p;
                 }
             }
 
+            if ($mejorProducto && $mejorScore > 30) {
+                return response()->json([
+                    'reply' => "💰 {$mejorProducto->name} cuesta S/ {$mejorProducto->price}"
+                ]);
+            }
+
             return response()->json([
-                'reply' => "¿De qué producto deseas saber el precio? 😊"
+                'reply' => "No encontré ese producto 😅 ¿Puedes escribirlo nuevamente?"
             ]);
         }
 
         // ==============================
-        // 🔥 3. TOP VENDIDOS (IMPORTANTE)
+        // 🔥 4. TOP VENDIDOS
         // ==============================
-        if (str_contains($mensajeLower, 'top') || str_contains($mensajeLower, 'más vendido')) {
+        if (
+            str_contains($mensajeLower, 'top') ||
+            str_contains($mensajeLower, 'más vendido')
+        ) {
 
-            // 👉 ajusta 'order_items' si tu tabla es otra
             $top = DB::table('order_items')
                 ->select('product_id', DB::raw('COUNT(*) as total'))
                 ->groupBy('product_id')
@@ -89,17 +108,30 @@ class ChatbotController extends Controller
         }
 
         // ==============================
-        // 🤖 4. IA (SOLO SI NO ENTRA ARRIBA)
+        // 🤖 5. DEFAULT → IA
         // ==============================
-        $prompt = "
-        Eres un asistente de una cafetería llamada PROCAFES.
+        return $this->respuestaIA($mensaje, $productos);
+    }
 
-        SOLO responde sobre productos, precios y pedidos.
+    // ==============================
+    // 🤖 FUNCIÓN IA (GROQ)
+    // ==============================
+    private function respuestaIA($mensaje, $productos)
+    {
+        $lista = "";
+        foreach ($productos as $p) {
+            $lista .= "{$p->name} - S/ {$p->price}\n";
+        }
+
+        $prompt = "
+        Eres un asistente de PROCAFES.
+
+        SOLO responde sobre cafetería, productos y pedidos.
 
         Productos:
         $lista
 
-        Si no sabes algo di: 'Te ayudamos en tienda 😊'
+        Responde corto y amable.
         ";
 
         $response = Http::withHeaders([
@@ -113,7 +145,13 @@ class ChatbotController extends Controller
             ],
         ]);
 
-        $reply = $response['choices'][0]['message']['content'] ?? 'Error';
+        if (!$response->successful()) {
+            return response()->json([
+                'reply' => '⚠️ Error con IA'
+            ]);
+        }
+
+        $reply = $response['choices'][0]['message']['content'] ?? 'No entendí 🤔';
 
         return response()->json(['reply' => $reply]);
     }
